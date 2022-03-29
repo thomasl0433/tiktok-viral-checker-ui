@@ -6,26 +6,42 @@ class App extends React.Component {
     term: "",
     hasSearched: false,
     isViral: false,
-    hasSubmitted: false
+    hasSubmitted: false,
+    data: {},
   };
 
   onFormSubmit = async (event) => {
     event.preventDefault();
-    console.log(this.state.term);
+    //console.log(this.state.term);
     this.setState({
       hasSearched: true,
-      hasSubmitted: true
-    })
+      hasSubmitted: true,
+    });
 
     // shoot off request to backend
-    console.log(`Hitting http://localhost:3001/${this.state.term}}`);
+    //console.log(`Hitting http://localhost:3001/${this.state.term}}`);
     const response = await fetch(`http://localhost:3001/${this.state.term}`);
 
     const output = await response.json();
-    this.setState({
-      isViral: output.viral
-    })
+    try {
+      this.setState({
+        isViral: output.viral,
+        data: output
+      });
+    } catch (error) {
+      console.log(error)
+    }
+    
     console.log(output);
+  };
+
+  renderSearch = () => {
+    console.log("inside renderSearch");
+    const items = this.state.data.map(item =>
+      <li key={item.name}>{item.name}</li>
+    )
+
+    return items;
   };
 
   render() {
@@ -45,16 +61,28 @@ class App extends React.Component {
               value={this.state.term}
               onChange={(e) => this.setState({ term: e.target.value })}
             />
-            {this.state.hasSearched && this.state.hasSubmitted ? <p>Show results for <em>{this.state.term}</em></p> : <div></div>}
+            {this.state.hasSearched && this.state.hasSubmitted ? (
+              <p>
+                Show results for <em>{this.state.term}</em>
+              </p>
+            ) : (
+              <div></div>
+            )}
           </form>
         </div>
         <div className="content">
-          {this.state.hasSearched
-            ? <h1>Is the song viral? {this.state.isViral ? 'yes' : 'no'}</h1>
-            : <div></div>
-          }
+          {this.state.hasSearched ? (
+            <h1>Is the song viral? {this.state.isViral ? "yes" : "no"}</h1>
+          ) : (
+            <div></div>
+          )}
           <h4>Not on Tiktok?</h4>
-          <p>Use this tool to search a song to see if it's famous from Tiktok.</p>
+          <p>
+            Use this tool to search a song to see if it's famous from Tiktok.
+          </p>
+          <div>
+            Content: {Object.keys(this.state.data).length === 0 ? "empty" : this.renderSearch()}
+          </div>
         </div>
       </div>
     );
