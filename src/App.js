@@ -31,15 +31,15 @@ class App extends React.Component {
         data: output,
       });
     } catch (error) {
-      console.log(error);
+      //console.log(error);
     }
 
-    console.log(output);
+    //console.log(output);
   };
 
   renderSearch = () => {
     let id = 0;
-    console.log("inside renderSearch");
+    //console.log("inside renderSearch");
     const items = this.state.data.map((item) => (
       <button onClick={() => this.onSongSelect(item)} className="btn btn-light rounded w-50 mx-auto d-block mb-2" key={id++}>
         {item.name} by {item.artist}
@@ -51,8 +51,8 @@ class App extends React.Component {
 
   onSongSelect = async (item) => {
     // this will determine if the song is viral or not (return TRUE or FALSE)
-    console.log("inside onSongSelect");
-    console.log(item);
+    // console.log("inside onSongSelect");
+    // console.log(item);
 
     const response = await fetch(`http://localhost:3001/narrowsearch/${item.id}`);
 
