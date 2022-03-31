@@ -1,5 +1,6 @@
 import "./App.css";
 import React from "react";
+//equire("dotenv").config({ path: "../config.env" });
 
 class App extends React.Component {
   state = {
@@ -8,7 +9,8 @@ class App extends React.Component {
     isViral: null,
     hasSubmitted: false,
     data: {},
-    song: {}
+    song: {},
+    displayTerm: ""
   };
 
   onFormSubmit = async (event) => {
@@ -22,13 +24,14 @@ class App extends React.Component {
 
     // shoot off request to backend
     //console.log(`Hitting http://localhost:3001/${this.state.term}}`);
-    const response = await fetch(`http://localhost:3001/widesearch/${this.state.term}`);
+    const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/widesearch/${this.state.term}`);
 
     const output = await response.json();
     try {
       this.setState({
         isViral: output.viral,
         data: output,
+        displayTerm: this.state.term
       });
     } catch (error) {
       //console.log(error);
@@ -40,6 +43,7 @@ class App extends React.Component {
   renderSearch = () => {
     let id = 0;
     //console.log("inside renderSearch");
+
     const items = this.state.data.map((item) => (
       <button onClick={() => this.onSongSelect(item)} className="btn btn-light rounded w-50 mx-auto d-block mb-2" key={id++}>
         {item.name} by {item.artist}
@@ -52,9 +56,9 @@ class App extends React.Component {
   onSongSelect = async (item) => {
     // this will determine if the song is viral or not (return TRUE or FALSE)
     // console.log("inside onSongSelect");
-    // console.log(item);
+    console.log(item);
 
-    const response = await fetch(`http://localhost:3001/narrowsearch/${item.id}`);
+    const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/narrowsearch/${item.id}`);
 
     const output = await response.json();
     
@@ -82,9 +86,9 @@ class App extends React.Component {
                 value={this.state.term}
                 onChange={(e) => this.setState({ term: e.target.value })}
               />
-              {this.state.hasSearched && this.state.hasSubmitted ? (
+              {this.state.hasSearched ? (
                 <p>
-                  Show results for <em>{this.state.term}</em>
+                  Showing results for <em>{this.state.displayTerm}</em>
                 </p>
               ) : (
                 <div></div>
@@ -95,8 +99,8 @@ class App extends React.Component {
         <div className="content">
           {this.state.isViral != null ? (
             <div>
-              <h1>Is "{this.state.song.name}" viral?</h1>
-              <h1>{this.state.isViral ? "Yes" : "No"}</h1>
+              <h2>Is "{this.state.song.name}" by {this.state.song.artist} viral?</h2>
+              <h2>{this.state.isViral ? "Yes ✅" : "No ❌"}</h2>
             </div>
           ) : (
             <div></div>
