@@ -148,7 +148,7 @@ class App extends React.Component {
         </div>
         <div className="content">
           {this.state.isViral != null ? (
-            <div className="w-80">
+            <div className="w-75 mx-auto">
               <h2>Is "{this.state.song.name}" by {this.state.song.artist} viral?</h2>
               <h2>{this.state.isViral ? "Yes ✅" : "No ❌"}</h2>
             </div>
