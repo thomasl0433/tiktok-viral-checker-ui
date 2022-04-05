@@ -21,14 +21,17 @@ class App extends React.Component {
       hasSubmitted: true,
       data: {},
     });
+    let output = {};
 
     // shoot off request to backend
     //console.log(`Hitting http://localhost:3001/${this.state.term}}`);
     const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/widesearch/${this.state.term}`)
-      .then()
+      .then(async (res) => {
+        output = await res.json();
+      })
       .catch(err => console.log(err));
-    const output = await response.json();
-    // console.log(output);
+    //const output = await response.json();
+    console.log(output);
     try {
       this.setState({
         isViral: output.viral,
