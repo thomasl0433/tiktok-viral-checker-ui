@@ -26,7 +26,7 @@ class App extends React.Component {
 
     // shoot off request to backend
     //console.log(`Hitting http://localhost:3001/${this.state.term}}`);
-    await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/widesearch/${this.state.term}`)
+    await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/search/${this.state.term}`)
       .then(async (res) => {
         output = await res.json();
       })
@@ -84,7 +84,7 @@ class App extends React.Component {
       // duplicates exist - send all IDs to backend
       const term = encodeURIComponent(JSON.stringify(searchTerm));
       //console.log(term);
-      const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/narrowsearch/${term}`);
+      const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/isviral/${term}`);
       const output = await response.json();
       this.setState({
         isViral: output,
@@ -92,7 +92,7 @@ class App extends React.Component {
       })
     } else {
       // unique song (no duplicates) - send ONE ID backend
-      const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/narrowsearch/${item.id}`);
+      const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/isviral/${item.id}`);
       const output = await response.json();
       this.setState({
         isViral: output,
@@ -148,7 +148,7 @@ class App extends React.Component {
         </div>
         <div className="content">
           {this.state.isViral != null ? (
-            <div>
+            <div className="w-80">
               <h2>Is "{this.state.song.name}" by {this.state.song.artist} viral?</h2>
               <h2>{this.state.isViral ? "Yes ✅" : "No ❌"}</h2>
             </div>
