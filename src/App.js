@@ -24,9 +24,11 @@ class App extends React.Component {
 
     // shoot off request to backend
     //console.log(`Hitting http://localhost:3001/${this.state.term}}`);
-    const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/widesearch/${this.state.term}`);
-
+    const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/widesearch/${this.state.term}`)
+      .then()
+      .catch(err => console.log(err));
     const output = await response.json();
+    // console.log(output);
     try {
       this.setState({
         isViral: output.viral,
@@ -34,7 +36,7 @@ class App extends React.Component {
         displayTerm: this.state.term
       });
     } catch (error) {
-      //console.log(error);
+      console.log(error);
     }
 
     //console.log(output);
