@@ -10,7 +10,8 @@ class App extends React.Component {
     hasSubmitted: false,
     data: {},
     song: {},
-    displayTerm: ""
+    displayTerm: "",
+    duplicateData: {}
   };
 
   onFormSubmit = async (event) => {
@@ -25,24 +26,41 @@ class App extends React.Component {
 
     // shoot off request to backend
     //console.log(`Hitting http://localhost:3001/${this.state.term}}`);
-    const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/widesearch/${this.state.term}`)
+    await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/widesearch/${this.state.term}`)
       .then(async (res) => {
         output = await res.json();
       })
       .catch(err => console.log(err));
-    //const output = await response.json();
-    console.log(output);
+
+    //console.log(output);
     try {
       this.setState({
         isViral: output.viral,
         data: output,
         displayTerm: this.state.term
       });
+      this.removeDuplicates();
     } catch (error) {
       console.log(error);
     }
 
-    //console.log(output);
+  };
+
+  removeDuplicates = () => {
+    this.setState({
+      duplicateData: this.state.data
+    });
+    const names = this.state.data.map(song => song.name);
+
+    let uniqueSongs = this.state.data.filter((song, index) => {
+      return names.indexOf(song.name) === index;
+    });
+    
+    this.setState({
+      data: uniqueSongs
+    });
+    console.log("unique songs ", uniqueSongs);
+    console.log("includes duplicates ", this.state.duplicateData)
   };
 
   renderSearch = () => {
@@ -60,18 +78,44 @@ class App extends React.Component {
 
   onSongSelect = async (item) => {
     // this will determine if the song is viral or not (return TRUE or FALSE)
-    // console.log("inside onSongSelect");
     console.log(item);
-
-    const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/narrowsearch/${item.id}`);
-
-    const output = await response.json();
+    const searchTerm = this.obtainDuplicates(item);
+    if (searchTerm.length > 1) {
+      // duplicates exist - send all IDs to backend
+      const term = encodeURIComponent(JSON.stringify(searchTerm));
+      console.log(term);
+      const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/narrowsearch/${term}`);
+      const output = await response.json();
+      this.setState({
+        isViral: output,
+        song: item
+      })
+    } else {
+      // unique song (no duplicates) - send ONE ID backend
+      const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/narrowsearch/${item.id}`);
+      const output = await response.json();
+      this.setState({
+        isViral: output,
+        song: item
+      })
+    }
     
-    this.setState({
-      isViral: output,
-      song: item
-    })
-  }
+    
+  };
+
+  obtainDuplicates = (searchSong) => {
+    let out = [];
+    // grab all IDs that match the song name + artist of the selected song
+    this.state.duplicateData.forEach(item => {
+      //console.log(item);
+      if ((searchSong.name === item.name) && (searchSong.artist === item.artist)) {
+        //console.log("match");
+        out.push(item.id);
+      }
+    });
+    //console.log(out);
+    return out;
+  };
 
   render() {
     return (
