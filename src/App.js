@@ -135,6 +135,7 @@ class App extends React.Component {
                 value={this.state.term}
                 onChange={(e) => this.setState({ term: e.target.value })}
               />
+              <button type="submit" className="btn btn-primary btn-sm mx-2 mb-1">Submit</button>
               {this.state.hasSearched ? (
                 <p>
                   Showing results for <em>{this.state.displayTerm}</em>
