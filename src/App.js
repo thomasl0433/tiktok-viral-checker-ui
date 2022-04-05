@@ -59,8 +59,8 @@ class App extends React.Component {
     this.setState({
       data: uniqueSongs
     });
-    console.log("unique songs ", uniqueSongs);
-    console.log("includes duplicates ", this.state.duplicateData)
+    //console.log("unique songs ", uniqueSongs);
+    //console.log("includes duplicates ", this.state.duplicateData)
   };
 
   renderSearch = () => {
@@ -83,7 +83,7 @@ class App extends React.Component {
     if (searchTerm.length > 1) {
       // duplicates exist - send all IDs to backend
       const term = encodeURIComponent(JSON.stringify(searchTerm));
-      console.log(term);
+      //console.log(term);
       const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/narrowsearch/${term}`);
       const output = await response.json();
       this.setState({
