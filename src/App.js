@@ -84,20 +84,29 @@ class App extends React.Component {
       // duplicates exist - send all IDs to backend
       const term = encodeURIComponent(JSON.stringify(searchTerm));
       //console.log(term);
-      const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/isviral/${term}`);
-      const output = await response.json();
-      this.setState({
-        isViral: output,
-        song: item
-      })
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/isviral/${term}`);
+        const output = await response.json();
+        this.setState({
+          isViral: output,
+          song: item
+        });
+      } catch (err) {
+        console.log(err);
+      }
+      
     } else {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/isviral/${item.id}`);
+        const output = await response.json();
+        this.setState({
+          isViral: output,
+          song: item
+        });
+      } catch (err) {
+        console.log(err);
+      }
       // unique song (no duplicates) - send ONE ID backend
-      const response = await fetch(`${process.env.REACT_APP_API_SERVER_DOMAIN}/isviral/${item.id}`);
-      const output = await response.json();
-      this.setState({
-        isViral: output,
-        song: item
-      })
     }
     
     
@@ -129,6 +138,7 @@ class App extends React.Component {
         <div className="">
           <div className="">
             <h3>See if your song is viral on Tiktok</h3>
+            <em className="mb-5">You might have to press submit 2-3 times (sorry)</em>
             <form className="" onSubmit={this.onFormSubmit}>
               <input
                 type="text"
